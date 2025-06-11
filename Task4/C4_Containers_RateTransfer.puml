@@ -1,0 +1,20 @@
+
+@startuml C4_Containers_RateTransfer
+
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+System_Boundary(bank, "Банк Стандарт") {
+  Container(internalRatesService, "Сервис ставок", "Spring Boot + MS SQL", "Центральное хранилище ставок")
+  Container(callCenterSystem, "Система кол-центра", "Java + React + PostgreSQL", "Показывает ставки операторам")
+  Container(ratesExporter, "Сервис выгрузки ставок", "Python или Java", "Формирует и отправляет файлы .XLS/.CSV")
+  Container_Ext(bankCore, "АБС", "Delphi + Oracle", "Источники ставок по процессу банка")
+}
+
+System_Ext(partnerCallCenter, "Система партнёрского кол-центра")
+
+Rel(bankCore, internalRatesService, "Передаёт ставки", "PL/SQL или выгрузка")
+Rel(internalRatesService, callCenterSystem, "API/реплика")
+Rel(internalRatesService, ratesExporter, "Поставляет данные")
+Rel(ratesExporter, partnerCallCenter, "Передаёт файл со ставками", "XLS/CSV")
+
+@enduml

@@ -1,0 +1,29 @@
+
+@startuml C4_Context_RateTransfer
+
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(customer, "Клиент", "Пожилой клиент, интересующийся депозитом")
+Person(operator, "Оператор основного кол-центра", "Консультирует по ставкам")
+Person(partnerOperator, "Оператор партнёрского кол-центра", "Обрабатывает обращения клиентов банка")
+
+System(bankCore, "АБС (Автоматизированная банковская система)", "Источник актуальных ставок по депозитам")
+System(internalRatesService, "Сервис ставок", "Централизованное хранилище ставок банка")
+System(webPortal, "Интернет-банк", "Фронт для подачи заявок клиентами")
+System(callCenterSystem, "Система кол-центра", "Основной канал взаимодействия операторов с клиентами")
+System_Ext(partnerCallCenter, "Партнёрский кол-центр", "Внешняя система обработки звонков")
+
+System(ratesExporter, "Сервис выгрузки ставок", "Формирует XLS/CSV с актуальными ставками")
+
+Rel(customer, operator, "Звонит, уточняет ставки")
+Rel(operator, callCenterSystem, "Использует")
+Rel(callCenterSystem, internalRatesService, "Получает ставки (по API/реплике)")
+
+Rel(customer, partnerOperator, "Звонит в партнёрский кол-центр")
+Rel(partnerOperator, partnerCallCenter, "Использует")
+Rel(partnerCallCenter, ratesExporter, "Получает файлы ставок", "XLS/CSV по расписанию")
+
+Rel(bankCore, internalRatesService, "Передаёт ставки (вручную или по API)")
+Rel(internalRatesService, ratesExporter, "Источник данных для выгрузки")
+
+@enduml

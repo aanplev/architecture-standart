@@ -1,0 +1,28 @@
+@startuml C4_Containers_Deposits_MVP
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(customer, "Клиент")
+
+System_Boundary(internetbank, "Интернет-банк") {
+  Container(ib_web, "Web-интерфейс", "ASP.NET MVC", "Отображение интерфейса для клиента")
+  Container(ib_backend, "Backend", "C#", "Обработка бизнес-логики и отправка данных")
+  Container(ib_gateway, "Интеграционный шлюз", "REST API / Message Bus", "Интеграция с АБС")
+}
+
+System_Boundary(abc, "АБС") {
+  Container(abc_ui, "Рабочее место", "Delphi", "Работа бэк-офиса и кредитного отдела")
+  Container(abc_db, "База данных", "Oracle", "Хранение и обработка данных по ставкам и депозитам")
+  Container(abc_calc, "Сервис ставок", "PL/SQL процедуры", "Расчёт условий депозита")
+}
+
+System_Ext(sms_gateway, "СМС-шлюз", "Передаёт уведомления")
+System_Ext(callcenter, "Система кол-центра", "Принимает заявки с сайта")
+
+Rel(customer, ib_web, "Взаимодействие через браузер", "HTTPS")
+Rel(ib_web, ib_backend, "Обработка заявок")
+Rel(ib_backend, ib_gateway, "Отправка данных", "REST/Queue")
+Rel(ib_gateway, abc_calc, "Передаёт заявку на расчёт ставки")
+Rel(abc_calc, abc_db, "Работа с данными")
+Rel(abc_calc, sms_gateway, "Отправка СМС")
+
+@enduml
